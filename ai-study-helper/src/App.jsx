@@ -1,10 +1,22 @@
+import { useState } from "react";
 import "./App.css";
-import MultiFileUpload from "./components/MultipleFileUpload";
+import LandingPage from "./components/LandingPage";
+import FileUploader from "./components/FileUploader";
 
 function App() {
+  const [startLearning, setStartLearning] = useState(false);
+
+  const onStartLearning = () => {
+    setStartLearning(true);
+  };
+
   return (
     <>
-      <MultiFileUpload/>
+      {startLearning ? (
+        <FileUploader />
+      ) : (
+        <LandingPage startLearning={onStartLearning} />
+      )}
     </>
   );
 }
