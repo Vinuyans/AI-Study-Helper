@@ -12,12 +12,14 @@ app.use((req, res, next) => {
 });
 app.use(express.static('public'));
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://localhost:3000",
   methods: ["POST", "GET", "OPTIONS"],
 }));
-app.use("/api", api);
+
 app.use(bodyParser.json({ limit: "100mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "100mb" }));
+
+app.use("/api", api);
 
 app.use(function (_, res) {
   res.status(404).send("404 NOT FOUND");
