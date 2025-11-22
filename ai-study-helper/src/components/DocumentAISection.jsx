@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DocumentEntry } from '../types';
-import { generateTextWithContext } from '../services/geminiService';
 import { PiFileText, PiUploadSimple, PiMagicWand, PiBookOpen } from 'react-icons/pi';
+import { generateTextWithContext } from '@/services/geminiService';
 
-const DocumentAISection: React.FC = () => {
-  const [documents, setDocuments] = useState<DocumentEntry[]>([]);
-  const [prompt, setPrompt] = useState<string>('');
-  const [response, setResponse] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+const DocumentAISection = () => {
+  const [documents, setDocuments] = useState([]);
+  const [prompt, setPrompt] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event) => {
     setError(null);
     if (event.target.files) {
-      const newDocuments: DocumentEntry[] = [];
+      const newDocuments = [];
       for (let i = 0; i < event.target.files.length; i++) {
         const file = event.target.files[i];
         if (file.type === 'text/plain' || file.type === 'application/pdf') { // Basic check, PDF parsing needs external lib
@@ -37,7 +36,7 @@ const DocumentAISection: React.FC = () => {
     }
   };
 
-  const handleGenerate = async (e: React.FormEvent) => {
+  const handleGenerate = async (e) => {
     e.preventDefault();
     if (prompt.trim() === '' || documents.length === 0) {
       setError('Please upload documents and enter a prompt.');

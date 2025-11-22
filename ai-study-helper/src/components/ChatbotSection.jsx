@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ChatEntry } from '../types';
-import { sendMessageStream } from '../services/geminiService';
-import { GenerateContentResponse } from '@google/genai';
 import { PiPaperPlaneRightFill, PiSparkleFill, PiChatCircleText } from 'react-icons/pi';
+import { sendMessageStream } from '@/services/geminiService';
 
 // System instruction is now handled by the backend
 // const systemInstruction = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
 
-const ChatbotSection: React.FC = () => {
-  const [messages, setMessages] = useState<ChatEntry[]>([]);
-  const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+const ChatbotSection = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,11 +20,11 @@ const ChatbotSection: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (input.trim() === '' || loading) return;
 
-    const userMessage: ChatEntry = {
+    const userMessage = {
       id: uuidv4(),
       role: 'user',
       parts: [{ text: input }],
@@ -47,7 +45,7 @@ const ChatbotSection: React.FC = () => {
 
       let fullResponseText = '';
       const modelMessageId = uuidv4();
-      const modelInitialMessage: ChatEntry = {
+      const modelInitialMessage = {
         id: modelMessageId,
         role: 'model',
         parts: [{ text: '' }],
@@ -59,7 +57,7 @@ const ChatbotSection: React.FC = () => {
       const stream = sendMessageStream(input, chatHistoryForAPI);
 
       for await (const chunk of stream) {
-        const c = chunk as GenerateContentResponse;
+        const c = chunk;
         if (c.text) {
           fullResponseText += c.text;
           setMessages((prev) =>

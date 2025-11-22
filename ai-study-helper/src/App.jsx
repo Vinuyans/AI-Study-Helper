@@ -1,24 +1,82 @@
-import { useState } from "react";
-import "./App.css";
-import LandingPage from "./components/LandingPage";
-import FileUploader from "./components/FileUploader";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import ChatbotSection from './components/ChatbotSection';
+import DocumentAISection from './components/DocumentAISection';
+import { PiChatCircleText, PiFileText, PiImageSquare, PiMagicWand } from 'react-icons/pi'; // Icons for features
+import { Feature } from '@/types';
 
-function App() {
-  const [startLearning, setStartLearning] = useState(false);
+// Removed AIServiceWindow interface and window.aistudio related logic
+// API key management is now entirely handled by the backend.
 
-  const onStartLearning = () => {
-    setStartLearning(true);
-  };
+const App = () => {
+  const [activeFeature, setActiveFeature] = useState(Feature.CHATBOT);
+
+  // No longer need handleApiKeySelection or its useEffect call as API keys are backend managed.
+  // useEffect(() => {
+  //   handleApiKeySelection();
+  // }, []);
 
   return (
-    <>
-      {startLearning ? (
-        <FileUploader />
-      ) : (
-        <LandingPage startLearning={onStartLearning} />
-      )}
-    </>
+    <Router>
+      <div className="flex h-screen bg-gray-50 text-gray-800">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white p-6 shadow-md flex flex-col justify-between">
+          <div>
+            <div className="flex items-center mb-10">
+              <span className="text-3xl font-extrabold text-indigo-700">Gemini</span>
+              <span className="text-xl font-bold text-gray-600 ml-2">Study Buddy</span>
+            </div>
+            <nav>
+              <ul>
+                <li className="mb-4">
+                  <Link
+                    to="/chatbot"
+                    onClick={() => setActiveFeature(Feature.CHATBOT)}
+                    className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+                      activeFeature === Feature.CHATBOT
+                        ? 'bg-indigo-100 text-indigo-700 font-semibold shadow-sm'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'
+                    }`}
+                  >
+                    <PiChatCircleText className="mr-3 text-xl" />
+                    Chatbot
+                  </Link>
+                </li>
+                <li className="mb-4">
+                  <Link
+                    to="/document-ai"
+                    onClick={() => setActiveFeature(Feature.DOCUMENT_AI)}
+                    className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+                      activeFeature === Feature.DOCUMENT_AI
+                        ? 'bg-indigo-100 text-indigo-700 font-semibold shadow-sm'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'
+                    }`}
+                  >
+                    <PiFileText className="mr-3 text-xl" />
+                    Document AI
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          {/* Footer or settings can go here */}
+          <div className="text-center text-sm text-gray-500">
+            Powered by Gemini API (via your backend)
+            {/* Removed billing info link as API key is now managed by user's backend */}
+          </div>
+        </aside>
+
+        {/* Main content area */}
+        <main className="flex-1 overflow-auto bg-gray-100 p-8">
+          <Routes>
+            <Route path="/" element={<Navigate to="/chatbot" />} />
+            <Route path="/chatbot" element={<ChatbotSection />} />
+            <Route path="/document-ai" element={<DocumentAISection />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
