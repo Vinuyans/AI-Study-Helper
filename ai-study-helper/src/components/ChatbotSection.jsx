@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PiPaperPlaneRightFill, PiSparkleFill, PiChatCircleText } from 'react-icons/pi';
-import { sendMessageStream } from '@/services/geminiService';
+import { sendMessageStream } from '@/services/geminiServices';
 
 // System instruction is now handled by the backend
 // const systemInstruction = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';

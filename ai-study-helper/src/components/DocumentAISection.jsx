@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PiFileText, PiUploadSimple, PiMagicWand, PiBookOpen } from 'react-icons/pi';
-import { generateTextWithContext } from '@/services/geminiService';
+import { generateTextWithContext } from '@/services/geminiServices';
 
 const DocumentAISection = () => {
   const [documents, setDocuments] = useState([]);
