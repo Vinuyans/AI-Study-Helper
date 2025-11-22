@@ -3,9 +3,8 @@ import 'dotenv/config';
 import { GoogleGenAI } from '@google/genai';
 
 const API_KEY = process.env.API_KEY;
-const GEMINI_CHAT_MODEL = 'gemini-2.0-flash-lite'; 
-const GEMINI_IMAGE_GENERATION_MODEL = 'gemini-2.0-flash-lite'; 
-const GEMINI_IMAGE_EDITING_MODEL = 'gemini-2.0-flash-lite';
+const GEMINI_CHAT_MODEL = 'gemini-2.0-flash-lite';
+const CUSTOM_PRE_PROMPT = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
 
 
 let ai;
@@ -48,7 +47,7 @@ chatBotRouter.post('/stream', async (req, res) => {
 
     try {
         // Define a system instruction for the chat model on the backend
-        const systemInstruction = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
+        const systemInstruction = CUSTOM_PRE_PROMPT;
 
         const streamResponse = await ai.models.generateContentStream({
             model: GEMINI_CHAT_MODEL,
