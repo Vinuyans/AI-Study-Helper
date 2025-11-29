@@ -1,4 +1,4 @@
-# Perceived Stress Scale PSS10
+# Perceived Stress Scale (PSS10)
 Based on the following [form](https://www.das.nh.gov/wellness/docs/percieved%20stress%20scale.pdf).
 
 ## General PSS
@@ -30,3 +30,23 @@ For each question choose from the following alternatives:
 
 
 ## School Life Specific
+
+1. In the last month, how often have you been upset because of something that happened unexpectedly with your classes or assignments (surprise quiz, moved deadline, unexpected exam difficulty, etc.)?
+
+2. In the last month, how often have you felt that you were unable to control your academic performance and grades?
+
+3. In the last month, how often have you felt nervous and stressed about exams, assignments, or coursework?
+
+4. In the last month, how often have you felt confident about your ability to complete your assignments and succeed in your courses?
+
+5. In the last month, how often have you felt that your classes and academic work were going well?
+
+6. In the last month, how often have you found that you could not cope with all the assignments, projects, and studying you had to do?
+
+7. In the last month, how often have you been able to control frustrations related to difficult coursework or challenging exams?
+
+8. In the last month, how often have you felt that you were keeping up with your lectures, readings, and assignments?
+
+9. In the last month, how often have you been angered because of things related to your courses that were outside of your control (group project issues, grading policies, course scheduling, etc.)?
+
+10. In the last month, how often have you felt that academic demands from your classes were piling up so high that you could not overcome them?
