@@ -15,8 +15,10 @@ const DocumentAISection = () => {
     if (event.target.files) {
       const newDocuments = [];
       for (let i = 0; i < event.target.files.length; i++) {
-        const file = event.target.files[i];
-        if (file.type === 'text/plain' || file.type === 'application/pdf') { // Basic check, PDF parsing needs external lib
+        const file = event.target.files[i]; //.pptx,.xlsx,.odt,.odp,.ods 
+        if (file.type === 'text/plain' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' 
+            || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.oasis.opendocument.text' || file.type === 'application/vnd.oasis.opendocument.presentation' 
+            || file.type === 'application/vnd.oasis.opendocument.spreadsheet') { // Basic check, PDF parsing needs external lib
           try {
             const fileContent = await file.text(); // Read as text, won't parse PDF
             newDocuments.push({
@@ -81,7 +83,7 @@ const DocumentAISection = () => {
           <input
             id="file-upload"
             type="file"
-            accept=".txt,.pdf"
+            accept=".txt,.pdf,.docx,.pptx,.xlsx,.odt,.odp,.ods"
             multiple
             onChange={handleFileChange}
             className="hidden"
