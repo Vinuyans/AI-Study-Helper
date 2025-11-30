@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PiFileText, PiUploadSimple, PiMagicWand, PiBookOpen } from 'react-icons/pi';
 import { generateTextWithContext } from '@/services/geminiServices';
@@ -9,18 +9,51 @@ const DocumentAISection = () => {
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [status, setStatus] = useState("");
+
+  const handleFileParsing = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    setStatus("Uploading...");
+    try {
+      const res = await fetch("http://localhost:5000/api/file/parse", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+      setStatus(`Uploaded successfully.`);
+      return await res.json()
+    } catch (err) {
+      console.error(err);
+      setStatus("Error uploading files.");
+      return {data: null}
+    }
+  }
+
+  const supportedFileTypes = [
+    'text/plain',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.text',
+    'application/vnd.oasis.opendocument.presentation',
+    'application/vnd.oasis.opendocument.spreadsheet'
+  ]
 
   const handleFileChange = async (event) => {
     setError(null);
     if (event.target.files) {
       const newDocuments = [];
       for (let i = 0; i < event.target.files.length; i++) {
-        const file = event.target.files[i]; //.pptx,.xlsx,.odt,.odp,.ods 
-        if (file.type === 'text/plain' || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' 
-            || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.oasis.opendocument.text' || file.type === 'application/vnd.oasis.opendocument.presentation' 
-            || file.type === 'application/vnd.oasis.opendocument.spreadsheet') { // Basic check, PDF parsing needs external lib
+        const file = event.target.files[i];
+        if (supportedFileTypes.includes(file.type)) {
           try {
-            const fileContent = await file.text(); // Read as text, won't parse PDF
+            const fileContent = await handleFileParsing(file).then(_ => _.data)
+            console.log("File contents", fileContent)
             newDocuments.push({
               id: uuidv4(),
               name: file.name,
@@ -28,13 +61,14 @@ const DocumentAISection = () => {
             });
           } catch (e) {
             console.error(`Error reading file ${file.name}:`, e);
-            setError(`Could not read file ${file.name}. Only text files are fully supported for content extraction.`);
+            setError(`Could not read file ${file.name}. File type isn't supported.`);
           }
         } else {
           setError(`Unsupported file type: ${file.type}. Please upload text or PDF (text content only).`);
         }
       }
       setDocuments((prev) => [...prev, ...newDocuments]);
+
     }
   };
 
