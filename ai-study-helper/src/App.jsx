@@ -9,11 +9,6 @@ import { Feature } from '@/types';
 const App = () => {
   const [activeFeature, setActiveFeature] = useState(Feature.CHATBOT);
 
-  // No longer need handleApiKeySelection or its useEffect call as API keys are backend managed.
-  // useEffect(() => {
-  //   handleApiKeySelection();
-  // }, []);
-
   return (
     <Router>
       <div className="flex h-screen bg-gray-50 text-gray-800">
