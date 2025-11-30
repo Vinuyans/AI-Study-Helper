@@ -5,8 +5,6 @@ import DocumentAISection from './components/DocumentAISection';
 import { PiChatCircleText, PiFileText, PiImageSquare, PiMagicWand } from 'react-icons/pi'; // Icons for features
 import { Feature } from '@/types';
 
-// Removed AIServiceWindow interface and window.aistudio related logic
-// API key management is now entirely handled by the backend.
 
 const App = () => {
   const [activeFeature, setActiveFeature] = useState(Feature.CHATBOT);
