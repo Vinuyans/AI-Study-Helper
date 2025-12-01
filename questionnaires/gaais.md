@@ -3,6 +3,12 @@ Based on the following scale given in the [appendix](https://www.sciencedirect.c
 
 ## Questionnaire
 
+For each question choose from the following alternatives:
+
+|Strongly disagree|Disagree|Neutral|Agree|Strongly agree |
+|-------|--------------|-----------|--------------|------------|
+| 1     | 2            | 3         | 4            | 5          |
+
 1. For routine transactions, I would rather interact with an artificially
 intelligent system than with a human
 2. Artificial Intelligence can provide new economic opportunities for
