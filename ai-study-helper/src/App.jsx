@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import ChatbotSection from './components/ChatbotSection';
 import DocumentAISection from './components/DocumentAISection';
+import SchedulerSection from './components/SchedulerSection';
 import { PiChatCircleText, PiFileText, PiImageSquare, PiMagicWand } from 'react-icons/pi'; // Icons for features
 import { Feature } from '@/types';
 
@@ -49,6 +50,20 @@ const App = () => {
                     Document AI
                   </Link>
                 </li>
+                <li className="mb-4">
+                  <Link
+                    to="/scheduler-ai"
+                    onClick={() => setActiveFeature(Feature.SCHEDULER_AI)}
+                    className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+                      activeFeature === Feature.SCHEDULER_AI
+                        ? 'bg-indigo-100 text-indigo-700 font-semibold shadow-sm'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'
+                    }`}
+                  >
+                    <PiFileText className="mr-3 text-xl" />
+                    Scheduler AI
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>
@@ -65,6 +80,7 @@ const App = () => {
             <Route path="/" element={<Navigate to="/chatbot" />} />
             <Route path="/chatbot" element={<ChatbotSection />} />
             <Route path="/document-ai" element={<DocumentAISection />} />
+            <Route path="/scheduler-ai" element={<SchedulerSection />} />
           </Routes>
         </main>
       </div>
