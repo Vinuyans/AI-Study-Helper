@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix server\" \"vite\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "install-packages": "npm i && cd .\/server && npm i && cd ..\/"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",

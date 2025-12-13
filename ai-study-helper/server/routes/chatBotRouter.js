@@ -1,7 +1,8 @@
 import { Router } from "express";
-import 'dotenv/config';
+import dotenv from "dotenv";
 import { GoogleGenAI } from '@google/genai';
 
+dotenv.config({ path: "./.env" });
 const API_KEY = process.env.API_KEY;
 const GEMINI_CHAT_MODEL = 'gemini-2.0-flash-lite';
 const CUSTOM_PRE_PROMPT = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
@@ -11,7 +12,7 @@ let ai;
 if (!API_KEY) {
   console.error('ERROR: API_KEY environment variable is not set.');
   console.error('Please ensure you have a .env file with API_KEY=YOUR_GEMINI_API_KEY_HERE in your backend directory, or set it in your environment.');
-  process.exit(1); // Exit if API key is not available
+  process.exit(1);
 } else {
   ai = new GoogleGenAI({ apiKey: API_KEY });
   console.log('Gemini API initialized successfully.');
