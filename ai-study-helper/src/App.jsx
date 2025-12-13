@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import ChatbotSection from './components/ChatbotSection';
 import DocumentAISection from './components/DocumentAISection';
-import { PiChatCircleText, PiFileText, PiImageSquare, PiMagicWand } from 'react-icons/pi'; // Icons for features
+import { PiChatCircleText, PiFileText } from 'react-icons/pi';
 import { Feature } from '@/types';
 
 
@@ -52,10 +52,8 @@ const App = () => {
               </ul>
             </nav>
           </div>
-          {/* Footer or settings can go here */}
           <div className="text-center text-sm text-gray-500">
             Powered by Gemini API (via your backend)
-            {/* Removed billing info link as API key is now managed by user's backend */}
           </div>
         </aside>
 

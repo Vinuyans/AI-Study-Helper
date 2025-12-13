@@ -14,6 +14,7 @@ app.use(express.static('public'));
 app.use(cors({
   origin: "http://localhost:3000",
   methods: ["POST", "GET", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
 }));
 
 app.use(bodyParser.json({ limit: "100mb" }));
