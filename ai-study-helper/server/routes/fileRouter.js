@@ -41,6 +41,8 @@ fileRouter.post("/parse", upload.single("file"), async (req, res) => {
     let text;
     if (mimetype === "application/pdf") {
       text = await parsePdfBuffer(buffer);
+    } else if (mimetype == "text/plain") {
+      text = buffer.toString();
     } else {
       text = await officeParser.parseOfficeAsync(buffer);
     }
