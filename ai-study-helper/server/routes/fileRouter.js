@@ -98,7 +98,7 @@ fileRouter.get("/context-all", async (req, res) => {
             );
           }
       } catch (error) {
-        console.error(`Error processing file ${filename}:`, error);\
+        console.error(`Error processing file ${filename}:`, error);
       }
     }));
     const finalContext = combinedContext.join('\n\n');
