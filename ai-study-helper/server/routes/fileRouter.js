@@ -6,6 +6,7 @@ import officeParser from "officeparser"
 import { PDFExtract } from "pdf.js-extract";
 import { v4 as uuidv4 } from 'uuid';
 import fs from "fs/promises";
+import mime from 'mime-types';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
