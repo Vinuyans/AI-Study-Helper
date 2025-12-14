@@ -10,12 +10,12 @@ const CUSTOM_PRE_PROMPT = 'You are a helpful study buddy. You can answer questio
 
 let ai;
 if (!API_KEY) {
-  console.error('ERROR: API_KEY environment variable is not set.');
-  console.error('Please ensure you have a .env file with API_KEY=YOUR_GEMINI_API_KEY_HERE in your backend directory, or set it in your environment.');
-  process.exit(1);
+    console.error('ERROR: API_KEY environment variable is not set.');
+    console.error('Please ensure you have a .env file with API_KEY=YOUR_GEMINI_API_KEY_HERE in your backend directory, or set it in your environment.');
+    process.exit(1);
 } else {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-  console.log('Gemini API initialized successfully.');
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+    console.log('Gemini API initialized successfully.');
 }
 
 const chatBotRouter = Router();
@@ -78,7 +78,7 @@ chatBotRouter.post('/stream', async (req, res) => {
         console.error('Error in /api/chat/stream:', error);
         // If headers haven't been sent, send an error response. Otherwise, just end the stream.
         if (!res.headersSent) {
-             res.status(500).json({ message: 'Failed to stream response from Gemini API.', error: error.message });
+            res.status(500).json({ message: 'Failed to stream response from Gemini API.', error: error.message });
         } else {
             res.end();
         }
@@ -118,6 +118,45 @@ chatBotRouter.post('/document-chat', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint for generating text with context.
+ */
+chatBotRouter.post('/generate-schedule', async (req, res) => {
+    if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
 
+    const { context } = req.body;
+
+    if (!context) {
+        return res.status(400).json({ message: 'Missing documents in request body.' });
+    }
+
+    const contents = [];
+    if (context) {
+        // Add context as a separate part or combined with the prompt
+        contents.push({
+            text: `Give me a study schedule that would help me prepare for an exam on the following documents? :\n${context} \nFollow this format:
+                        [{
+                        Id: 1,
+                        Subject: 'Meeting',
+                        StartTime: new Date(2025, 11, 3, 13, 0),
+                        EndTime: new Date(2025, 11, 3, 14, 30),
+                        },...], make sure to only output the format, no extra words or characters, start with the [ and end with the ], don't use any markdown! i want the RAW json I need to directly be able to feed this in json format\n
+                        I want the schedule to start from today, minimum date is ${new Date()}.`
+        });
+    }
+
+    try {
+        const response = await ai.models.generateContent({
+            model: GEMINI_CHAT_MODEL, // Using chat model for document AI tasks
+            contents: contents,
+            // System instruction for document AI can be embedded in prompt or config if specific
+            // For general Q&A/summarization, the chat model works well.
+        });
+        res.json({ text: response.text });
+    } catch (error) {
+        console.error('Error in /api/schedule/generate:', error);
+        res.status(500).json({ message: 'Failed to generate schedule from Gemini API.', error: error.message });
+    }
+});
 
 export default chatBotRouter;

@@ -54,6 +54,7 @@ const DocumentAISection = () => {
           try {
             const fileContent = await handleFileParsing(file).then(_ => _.data)
             console.log("File contents", fileContent)
+            localStorage.setItem("Documents", fileContent)
             newDocuments.push({
               id: uuidv4(),
               name: file.name,

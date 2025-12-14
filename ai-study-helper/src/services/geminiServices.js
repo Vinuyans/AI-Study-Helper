@@ -1,6 +1,6 @@
-import { GenerateContentResponse } from "@google/genai"; 
+import { GenerateContentResponse } from "@google/genai";
 
-const BACKEND_API_BASE_URL = 'http://localhost:5000/api/chat'; 
+const BACKEND_API_BASE_URL = 'http://localhost:5000/api/chat';
 const SUPPORTED_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 /**
@@ -29,7 +29,7 @@ export const getBase64 = (file) => {
  * @param {Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }>} history - The chat history (excluding system instruction for backend).
  * @returns {AsyncGenerator<GenerateContentResponse>} An async generator yielding chunks of the response.
  */
-export async function* sendMessageStream( message, history) {
+export async function* sendMessageStream(message, history) {
   try {
     const response = await fetch(`${BACKEND_API_BASE_URL}/stream`, {
       method: 'POST',
@@ -108,10 +108,13 @@ export const generateNewSchedule = async () => {
 
   try {
     const response = await fetch(`${BACKEND_API_BASE_URL}/generate-schedule`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body: JSON.stringify({
+        context: localStorage.getItem("Documents")
+      }),
     });
 
     if (!response.ok) {
@@ -120,7 +123,8 @@ export const generateNewSchedule = async () => {
     }
 
     const data = await response.json();
-    return data.schedule;
+    console.log(data.text)
+    return JSON.parse(data.text);
   } catch (error) {
     console.error('Error generating text with context via backend:', error);
     throw error;

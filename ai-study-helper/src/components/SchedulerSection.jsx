@@ -43,16 +43,18 @@ const SchedulerSection = () => {
     setLoading(true);
     try {
       let newSchedule;
-      // newSchedule = await generateNewSchedule();
+      newSchedule = await generateNewSchedule();
       if (newSchedule) {
         setData(newSchedule);
+        setDataHasChanged(!dataHasChanged);
+        console.log(newSchedule)
       }
     } catch (e) {
       console.error(e);
     }
     setLoading(false);
   }
-  
+
   const handleOptimizeSchedule = async () => {
     setLoading(true);
     try {
@@ -60,6 +62,7 @@ const SchedulerSection = () => {
       // newSchedule = await optimizeSchedule(prompt, data);
       if (newSchedule) {
         setData(newSchedule);
+        setDataHasChanged(!dataHasChanged);
       }
     } catch (e) {
       console.error(e);
@@ -68,18 +71,18 @@ const SchedulerSection = () => {
   }
 
   //This gets rid of a free trial popup
-  useEffect(()=>{
+  useEffect(() => {
     let badDiv = document.querySelector("body > script + div");
-    if(badDiv) {
-      badDiv.hidden=true
+    if (badDiv) {
+      badDiv.hidden = true
     }
     badDiv = document.querySelector("body > script + div + span + div");
-    if(badDiv) {
+    if (badDiv) {
       badDiv.parentElement.removeChild(badDiv);
     }
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (data) {
       localStorage.setItem("schedule", JSON.stringify(data));
     }
@@ -87,43 +90,43 @@ const SchedulerSection = () => {
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl shadow-lg p-6 container">
-    <div className="mb-6 border-b border-gray-200 pb-6">
-      <textarea
-        id="prompt-textarea"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        rows={5}
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-200 mb-4 flex-1 resize-y"
-        placeholder="Type any specific schedule requests here (for optimizing only)."
-        disabled={loading}
-        aria-label="Schedule AI prompt"
-      ></textarea>
-      <button
-        onClick={handleGenerateNewSchedule}
-        disabled={loading}
-        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+      <div className="mb-6 border-b border-gray-200 pb-6">
+        <textarea
+          id="prompt-textarea"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={5}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-200 mb-4 flex-1 resize-y"
+          placeholder="Type any specific schedule requests here (for optimizing only)."
+          disabled={loading}
+          aria-label="Schedule AI prompt"
+        ></textarea>
+        <button
+          onClick={handleGenerateNewSchedule}
+          disabled={loading}
+          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+        >
+          Generate New Schedule
+        </button>
+        <button
+          onClick={handleOptimizeSchedule}
+          disabled={loading}
+          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+        >
+          Optimize Schedule
+        </button>
+      </div>
+      <ScheduleComponent
+        selectedDate={new Date()}
+        eventSettings={{
+          dataSource: data
+        }}
+        actionComplete={(event) => {
+          handleActionComplete(event);
+        }}
       >
-        Generate New Schedule
-      </button>
-      <button
-        onClick={handleOptimizeSchedule}
-        disabled={loading}
-        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
-      >
-        Optimize Schedule
-      </button>
-    </div>
-    <ScheduleComponent
-      selectedDate={new Date()}
-      eventSettings={{
-        dataSource: data
-      }}
-      actionComplete={(event) => {
-        handleActionComplete(event);
-      }}
-    >
-      <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
-    </ScheduleComponent>
+        <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
+      </ScheduleComponent>
     </div>
   );
 };
