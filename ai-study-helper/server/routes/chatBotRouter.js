@@ -4,7 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 
 dotenv.config({ path: "./.env" });
 const API_KEY = process.env.API_KEY;
-const GEMINI_CHAT_MODEL = 'gemini-2.0-flash-lite';
+const GEMINI_CHAT_MODEL = 'gemini-2.5-flash-lite';
 const CUSTOM_PRE_PROMPT = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
 
 
