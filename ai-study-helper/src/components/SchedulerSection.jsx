@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PiPaperPlaneRightFill, PiSparkleFill, PiChatCircleText } from 'react-icons/pi';
-import { sendMessageStream } from '@/services/geminiServices';
+import { generateNewSchedule, optimizeSchedule } from '@/services/geminiServices';
 import './SchedulerSection.css';
 import { ScheduleComponent, Day, Week, WorkWeek, Month, Agenda, Inject } from '@syncfusion/ej2-react-schedule';
 
@@ -39,12 +39,32 @@ const SchedulerSection = () => {
     }
   }
 
-  const generateNewSchedule = () => {
+  const handleGenerateNewSchedule = async () => {
     setLoading(true);
+    try {
+      let newSchedule;
+      // newSchedule = await generateNewSchedule();
+      if (newSchedule) {
+        setData(newSchedule);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
   }
   
-  const optimizeSchedule = () => {
+  const handleOptimizeSchedule = async () => {
     setLoading(true);
+    try {
+      let newSchedule;
+      // newSchedule = await optimizeSchedule(prompt, data);
+      if (newSchedule) {
+        setData(newSchedule);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
   }
 
   //This gets rid of a free trial popup
@@ -79,14 +99,14 @@ const SchedulerSection = () => {
         aria-label="Schedule AI prompt"
       ></textarea>
       <button
-        onClick={generateNewSchedule}
+        onClick={handleGenerateNewSchedule}
         disabled={loading}
         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
       >
         Generate New Schedule
       </button>
       <button
-        onClick={optimizeSchedule}
+        onClick={handleOptimizeSchedule}
         disabled={loading}
         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
       >
