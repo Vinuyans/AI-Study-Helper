@@ -2,6 +2,7 @@ import { Router } from "express";
 import dotenv from "dotenv";
 import { GoogleGenAI } from '@google/genai';
 import { getContext } from "./fileRouter.js";
+import { optimizeSchedulePrompt, generateSchedulePrompt } from "./prompts.js";
 
 dotenv.config({ path: "./.env" });
 const API_KEY = process.env.API_KEY;
@@ -120,7 +121,7 @@ chatBotRouter.post('/document-chat', async (req, res) => {
 });
 
 /**
- * Endpoint for generating text with context.
+ * Endpoint for generating schedule with context.
  */
 chatBotRouter.get('/generate-schedule', async (req, res) => {
     if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
@@ -129,14 +130,7 @@ chatBotRouter.get('/generate-schedule', async (req, res) => {
     if (context) {
         // Add context as a separate part or combined with the prompt
         contents.push({
-            text: `Give me a study schedule that would help me prepare for an exam on the following documents? :\n${context} \nFollow this format:
-                        [{
-                        Id: 1,
-                        Subject: 'Meeting',
-                        StartTime: new Date(2025, 11, 3, 13, 0),
-                        EndTime: new Date(2025, 11, 3, 14, 30),
-                        },...], make sure to only output the format, no extra words or characters, start with the [ and end with the ], don't use any markdown! i want the RAW json I need to directly be able to feed this in json format\n
-                        I want the schedule to start from today, minimum date is ${new Date()}. Do not put any extra comma, make sure to only put whats necessary for the json to be parsed`
+            text: generateSchedulePrompt(context)
         });
     }
 
@@ -147,10 +141,40 @@ chatBotRouter.get('/generate-schedule', async (req, res) => {
             // System instruction for document AI can be embedded in prompt or config if specific
             // For general Q&A/summarization, the chat model works well.
         });
-        res.json({ text: response.text });
+        res.json({ text: response.text.replace("```json", "").replace("```", "") });
     } catch (error) {
         console.error('Error in /api/schedule/generate:', error);
         res.status(500).json({ message: 'Failed to generate schedule from Gemini API.', error: error.message });
+    }
+});
+
+
+/**
+ * Endpoint for optimizing schedule with context.
+ */
+chatBotRouter.post('/optimize-schedule', async (req, res) => {
+    if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
+    const context = (await getContext()).join('\n\n');
+    const { prompt, schedule } = req.body;
+    const contents = []
+    if (context) {
+        // Add context as a separate part or combined with the prompt
+        contents.push({
+            text: optimizeSchedulePrompt(context, schedule, prompt)
+        });
+    }
+
+    try {
+        const response = await ai.models.generateContent({
+            model: GEMINI_CHAT_MODEL, // Using chat model for document AI tasks
+            contents: contents,
+            // System instruction for document AI can be embedded in prompt or config if specific
+            // For general Q&A/summarization, the chat model works well.
+        });
+        res.json({ text: response.text.replace("```json", "").replace("```", "") });
+    } catch (error) {
+        console.error('Error in /api/schedule/optimize:', error);
+        res.status(500).json({ message: 'Failed to optimize schedule from Gemini API.', error: error.message });
     }
 });
 

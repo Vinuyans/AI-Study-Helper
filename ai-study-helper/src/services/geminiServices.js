@@ -111,7 +111,8 @@ export const generateNewSchedule = async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      }});
+      }
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -119,7 +120,6 @@ export const generateNewSchedule = async () => {
     }
 
     const data = await response.json();
-    console.log(data.text)
     return JSON.parse(data.text);
   } catch (error) {
     console.error('Error generating text with context via backend:', error);
@@ -148,11 +148,11 @@ export const optimizeSchedule = async (prompt, oldSchedule) => {
     }
 
     const data = await response.json();
-    return data.schedule;
+
+    return JSON.parse(data.text);
   } catch (error) {
     console.error('Error generating text with context via backend:', error);
     throw error;
   }
-
 };
 

@@ -47,7 +47,6 @@ const SchedulerSection = () => {
       if (newSchedule) {
         setData(newSchedule);
         setDataHasChanged(!dataHasChanged);
-        console.log(newSchedule)
       }
     } catch (e) {
       console.error(e);
@@ -59,7 +58,7 @@ const SchedulerSection = () => {
     setLoading(true);
     try {
       let newSchedule;
-      // newSchedule = await optimizeSchedule(prompt, data);
+      newSchedule = await optimizeSchedule(prompt, data);
       if (newSchedule) {
         setData(newSchedule);
         setDataHasChanged(!dataHasChanged);
