@@ -29,17 +29,24 @@ export const getBase64 = (file) => {
  * @param {Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }>} history - The chat history (excluding system instruction for backend).
  * @returns {AsyncGenerator<GenerateContentResponse>} An async generator yielding chunks of the response.
  */
-export async function* sendMessageStream(message, history) {
+export async function* sendMessageStream(message, history, uploadedDocumentContext) {
   try {
+    const payload = {
+      message: message,
+      history: history
+    }
+
+    // Only add document context if it exists
+    if (uploadedDocumentContext && uploadedDocumentContext.trim() !== '') {
+      payload.uploadedDocumentContext = uploadedDocumentContext;
+    }
+
     const response = await fetch(`${BACKEND_API_BASE_URL}/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        message: message,
-        history: history
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {

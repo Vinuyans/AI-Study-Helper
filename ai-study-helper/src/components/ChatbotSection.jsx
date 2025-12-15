@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PiPaperPlaneRightFill, PiSparkleFill, PiChatCircleText } from 'react-icons/pi';
 import { sendMessageStream } from '@/services/geminiServices';
+// import { getContext } from "../../server/routes/fileRouter.js";
 
 const ChatbotSection = () => {
   const [messages, setMessages] = useState([]);
@@ -53,7 +54,8 @@ const ChatbotSection = () => {
       setMessages((prev) => [...prev, modelInitialMessage]);
 
       // System instruction is now implicitly managed by the backend when it creates the chat session.
-      const stream = sendMessageStream(input, chatHistoryForAPI);
+      console.log("Uploaded document context: " + uploadedDocumentContext);
+      const stream = sendMessageStream(input, chatHistoryForAPI, uploadedDocumentContext);
 
       for await (const chunk of stream) {
         const c = chunk;
@@ -84,7 +86,6 @@ const ChatbotSection = () => {
     try {
       const response = await fetch('http://localhost:5000/api/file/context-all');
       const data = await response.json();
-      // data.combined_context contains all document text
       setUploadedDocumentContext(data.combined_context);
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -116,11 +117,16 @@ const ChatbotSection = () => {
         <PiChatCircleText className="mr-3 text-indigo-600" /> Chat
       </h2>
       <div>
-        <p className='text-gray-800'> Uploaded Documents: 
+        <p className='text-gray-800'>Uploaded Documents: 
           <span className="ml-1">
             {loading ? 'Loading...' : ((documentCount === 0) ? 'None' : documentCount)}
           </span>
         </p>
+        {/* <p className='text-gray-800'>Document Context:
+          <span className="ml-1">
+            {uploadedDocumentContext !== '' ? "Found" : "None"}
+          </span>
+        </p> */}
       </div>
       <div className="flex-1 overflow-y-auto pr-4 mb-6 custom-scrollbar">
         {messages.length === 0 && (
