@@ -60,7 +60,8 @@ chatBotRouter.post('/stream', async (req, res) => {
             contextMessage += "inform repsonses. If my prompt is not related to the document context, then refer to broader ";
             contextMessage += "general knowledge to answer instead. The response should clearly be based either on general knowledge ";
             contextMessage += "or specifically on the document context information. You don't need to mention which one it is; it should ";
-            contextMessage +=  "be obvious from the content of the response where the information is coming from.";
+            contextMessage += "be obvious from the content of the response where the information is coming from. ";
+            contextMessage += "If there is no document uploaded, specifically mention that the user has not yet uploaded anything.";
 
             // Add documentContext to contents
             contents.unshift({ role: 'user', parts: [{ text: documentContext }] });
