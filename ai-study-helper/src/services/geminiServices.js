@@ -108,14 +108,10 @@ export const generateNewSchedule = async () => {
 
   try {
     const response = await fetch(`${BACKEND_API_BASE_URL}/generate-schedule`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        context: localStorage.getItem("Documents")
-      }),
-    });
+      }});
 
     if (!response.ok) {
       const errorData = await response.json();

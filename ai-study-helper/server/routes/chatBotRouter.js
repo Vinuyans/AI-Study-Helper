@@ -1,6 +1,7 @@
 import { Router } from "express";
 import dotenv from "dotenv";
 import { GoogleGenAI } from '@google/genai';
+import { getContext } from "./fileRouter.js";
 
 dotenv.config({ path: "./.env" });
 const API_KEY = process.env.API_KEY;
@@ -121,15 +122,9 @@ chatBotRouter.post('/document-chat', async (req, res) => {
 /**
  * Endpoint for generating text with context.
  */
-chatBotRouter.post('/generate-schedule', async (req, res) => {
+chatBotRouter.get('/generate-schedule', async (req, res) => {
     if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
-
-    const { context } = req.body;
-
-    if (!context) {
-        return res.status(400).json({ message: 'Missing documents in request body.' });
-    }
-
+    const context = (await getContext()).join('\n\n');
     const contents = [];
     if (context) {
         // Add context as a separate part or combined with the prompt
@@ -141,7 +136,7 @@ chatBotRouter.post('/generate-schedule', async (req, res) => {
                         StartTime: new Date(2025, 11, 3, 13, 0),
                         EndTime: new Date(2025, 11, 3, 14, 30),
                         },...], make sure to only output the format, no extra words or characters, start with the [ and end with the ], don't use any markdown! i want the RAW json I need to directly be able to feed this in json format\n
-                        I want the schedule to start from today, minimum date is ${new Date()}.`
+                        I want the schedule to start from today, minimum date is ${new Date()}. Do not put any extra comma, make sure to only put whats necessary for the json to be parsed`
         });
     }
 
