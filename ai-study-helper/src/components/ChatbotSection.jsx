@@ -81,7 +81,7 @@ const ChatbotSection = () => {
   return (
     <div className="flex flex-col h-full bg-white rounded-xl shadow-lg p-6">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-        <PiChatCircleText className="mr-3 text-indigo-600" /> Chat with Gemini
+        <PiChatCircleText className="mr-3 text-indigo-600" /> Chat
       </h2>
       <div className="flex-1 overflow-y-auto pr-4 mb-6 custom-scrollbar">
         {messages.length === 0 && (

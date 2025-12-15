@@ -29,7 +29,7 @@ const DocumentAISection = () => {
     } catch (err) {
       console.error(err);
       setStatus("Error uploading files.");
-      return {data: null}
+      return { data: null }
     }
   }
 
@@ -53,7 +53,6 @@ const DocumentAISection = () => {
         if (supportedFileTypes.includes(file.type)) {
           try {
             const fileContent = await handleFileParsing(file).then(_ => _.data)
-            console.log("File contents", fileContent)
             newDocuments.push({
               id: uuidv4(),
               name: file.name,

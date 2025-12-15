@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 });
 
 async function getBufferFromDisk(filePath) {
-    return fs.readFile(filePath); 
+  return fs.readFile(filePath);
 }
 
 async function parsePdfBuffer(buffer) {
@@ -48,7 +48,7 @@ const upload = multer({ storage }); // keep files in memory
 
 fileRouter.post("/parse", upload.single("file"), async (req, res) => {
   if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded." });
+    return res.status(400).json({ error: "No file uploaded." });
   }
   try {
     const buffer = await getBufferFromDisk(req.file.path);
@@ -73,40 +73,44 @@ fileRouter.post("/parse", upload.single("file"), async (req, res) => {
   }
 });
 
+export const getContext = async () => {
+  const filenames = await fs.readdir(UPLOADS_DIR);
+  const uploadedFiles = filenames.filter(name => !name.startsWith('.'));
+  let combinedContext = [];
+  await Promise.all(uploadedFiles.map(async (filename) => {
+    const filePath = path.join(UPLOADS_DIR, filename);
+    let text = '';
+    const mimetype = mime.lookup(filename) || 'application/octet-stream';
+    try {
+      const buffer = await getBufferFromDisk(filePath);
+      if (mimetype === "application/pdf") {
+        text = await parsePdfBuffer(buffer);
+      } else if (mimetype.includes("text/")) {
+        text = buffer.toString();
+      } else if (mimetype.includes("application/vnd.openxmlformats-officedocument")) {
+        text = await officeParser.parseOfficeAsync(buffer);
+      } else {
+        return;
+      }
+      if (text.trim().length > 0) {
+        combinedContext.push(
+          `--- DOCUMENT START: ${filename} ---\n${text}\n--- DOCUMENT END: ${filename} ---`
+        );
+      }
+    } catch (error) {
+      console.error(`Error processing file ${filename}:`, error);
+    }
+  }));
+  return combinedContext;
+}
+
 fileRouter.get("/context-all", async (req, res) => {
   try {
-    const filenames = await fs.readdir(UPLOADS_DIR);
-    const uploadedFiles = filenames.filter(name => !name.startsWith('.'));
-    let combinedContext = [];
-    await Promise.all(uploadedFiles.map(async (filename) => {
-      const filePath = path.join(UPLOADS_DIR, filename);
-      let text = '';
-      const mimetype = mime.lookup(filename) || 'application/octet-stream';
-      try {
-        const buffer = await getBufferFromDisk(filePath);
-          if (mimetype === "application/pdf") {
-            text = await parsePdfBuffer(buffer);
-          } else if (mimetype.includes("text/")) {
-            text = buffer.toString();
-          } else if (mimetype.includes("application/vnd.openxmlformats-officedocument")) {
-            text = await officeParser.parseOfficeAsync(buffer);
-          } else {
-              return;
-          }
-          if (text.trim().length > 0) {
-            combinedContext.push(
-              `--- DOCUMENT START: ${filename} ---\n${text}\n--- DOCUMENT END: ${filename} ---`
-            );
-          }
-      } catch (error) {
-        console.error(`Error processing file ${filename}:`, error);
-      }
-    }));
-    const finalContext = combinedContext.join('\n\n');
+    const finalContext = await getContext();
     res.json({
-        message: `Successfully processed ${combinedContext.length} document(s).`,
-        total_files_processed: combinedContext.length,
-        combined_context: finalContext
+      message: `Successfully processed ${finalContext.length} document(s).`,
+      total_files_processed: finalContext.length,
+      combined_context: finalContext.join('\n\n')
     });
   } catch (err) {
     console.error("Error analyzing all files:", err);

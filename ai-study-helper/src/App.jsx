@@ -17,7 +17,6 @@ const App = () => {
         <aside className="w-64 bg-white p-6 shadow-md flex flex-col justify-between">
           <div>
             <div className="flex items-center mb-10">
-              <span className="text-3xl font-extrabold text-indigo-700">Gemini</span>
               <span className="text-xl font-bold text-gray-600 ml-2">Study Buddy</span>
             </div>
             <nav>
