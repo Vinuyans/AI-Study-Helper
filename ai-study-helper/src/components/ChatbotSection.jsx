@@ -7,6 +7,8 @@ const ChatbotSection = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [documentCount, setDocumentCount] = useState(0);
+  const [uploadedDocumentContext, setUploadedDocumentContext] = useState('');
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -78,11 +80,48 @@ const ChatbotSection = () => {
     }
   };
 
+  const fetchDocumentContext = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/file/context-all');
+      const data = await response.json();
+      // data.combined_context contains all document text
+      setUploadedDocumentContext(data.combined_context);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    }
+  };
+
+  const fetchDocumentCount = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/api/file/context-all');
+      const data = await response.json();
+      setDocumentCount(data.total_files_processed);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      setDocumentCount(0);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchDocumentCount();
+    fetchDocumentContext();
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-white rounded-xl shadow-lg p-6">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
         <PiChatCircleText className="mr-3 text-indigo-600" /> Chat with Gemini
       </h2>
+      <div>
+        <p className='text-gray-800'> Uploaded Documents: 
+          <span className="ml-1">
+            {loading ? 'Loading...' : ((documentCount === 0) ? 'None' : documentCount)}
+          </span>
+        </p>
+      </div>
       <div className="flex-1 overflow-y-auto pr-4 mb-6 custom-scrollbar">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">
