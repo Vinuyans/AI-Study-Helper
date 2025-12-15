@@ -94,7 +94,7 @@ export const getContext = async () => {
       }
       if (text.trim().length > 0) {
         combinedContext.push(
-          `--- DOCUMENT START: ${filename} ---\n${text}\n--- DOCUMENT END: ${filename} ---`
+          `--- DOCUMENT START: ${filename} ---\n${text}\n--- DOCUMENT END: ${filename} ---\n`
         );
       }
     } catch (error) {

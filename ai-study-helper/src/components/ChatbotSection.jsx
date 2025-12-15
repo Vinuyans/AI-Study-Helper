@@ -9,7 +9,6 @@ const ChatbotSection = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [documentCount, setDocumentCount] = useState(0);
-  const [uploadedDocumentContext, setUploadedDocumentContext] = useState('');
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -54,8 +53,7 @@ const ChatbotSection = () => {
       setMessages((prev) => [...prev, modelInitialMessage]);
 
       // System instruction is now implicitly managed by the backend when it creates the chat session.
-      console.log("Uploaded document context: " + uploadedDocumentContext);
-      const stream = sendMessageStream(input, chatHistoryForAPI, uploadedDocumentContext);
+      const stream = sendMessageStream(input, chatHistoryForAPI);
 
       for await (const chunk of stream) {
         const c = chunk;
@@ -82,16 +80,6 @@ const ChatbotSection = () => {
     }
   };
 
-  const fetchDocumentContext = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/file/context-all');
-      const data = await response.json();
-      setUploadedDocumentContext(data.combined_context);
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-    }
-  };
-
   const fetchDocumentCount = async () => {
     try {
       setLoading(true);
@@ -108,7 +96,6 @@ const ChatbotSection = () => {
 
   useEffect(() => {
     fetchDocumentCount();
-    fetchDocumentContext();
   }, []);
 
   return (
@@ -122,11 +109,6 @@ const ChatbotSection = () => {
             {loading ? 'Loading...' : ((documentCount === 0) ? 'None' : documentCount)}
           </span>
         </p>
-        {/* <p className='text-gray-800'>Document Context:
-          <span className="ml-1">
-            {uploadedDocumentContext !== '' ? "Found" : "None"}
-          </span>
-        </p> */}
       </div>
       <div className="flex-1 overflow-y-auto pr-4 mb-6 custom-scrollbar">
         {messages.length === 0 && (
