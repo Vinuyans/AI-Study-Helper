@@ -31,15 +31,17 @@ export const getBase64 = (file) => {
  */
 export async function* sendMessageStream(message, history) {
   try {
+    const payload = {
+      message: message,
+      history: history
+    }
+    
     const response = await fetch(`${BACKEND_API_BASE_URL}/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        message: message,
-        history: history
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {

@@ -50,7 +50,26 @@ chatBotRouter.post('/stream', async (req, res) => {
 
     try {
         // Define a system instruction for the chat model on the backend
-        const systemInstruction = CUSTOM_PRE_PROMPT;
+        let systemInstruction = CUSTOM_PRE_PROMPT;
+
+        // Get document context as a string
+        let documentContext = (await getContext()).join("\n\n");
+
+        if (documentContext && documentContext.trim() !== '') {
+            let contextMessage = "\n\nWhen responding to my prompt, refer primarily to the Uploaded Document Context to ";
+            contextMessage += "inform repsonses. If my prompt is not related to the document context, then refer to broader ";
+            contextMessage += "general knowledge to answer instead. The response should clearly be based either on general knowledge ";
+            contextMessage += "or specifically on the document context information. You don't need to mention which one it is; it should ";
+            contextMessage += "be obvious from the content of the response where the information is coming from. ";
+            contextMessage += "If there is no document uploaded, specifically mention that the user has not yet uploaded anything.";
+
+            // Add documentContext to contents
+            contents.unshift({ role: 'user', parts: [{ text: documentContext }] });
+
+            // Add contextMessage to systemInstruction
+            systemInstruction = contextMessage + CUSTOM_PRE_PROMPT;
+            console.log("Added document context to prompt.");
+        }   
 
         const streamResponse = await ai.models.generateContentStream({
             model: GEMINI_CHAT_MODEL,
