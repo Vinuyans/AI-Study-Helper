@@ -1,21 +1,23 @@
 import { Router } from "express";
 import dotenv from "dotenv";
 import { GoogleGenAI } from '@google/genai';
+import { getContext } from "./fileRouter.js";
+import { optimizeSchedulePrompt, generateSchedulePrompt } from "./prompts.js";
 
 dotenv.config({ path: "./.env" });
 const API_KEY = process.env.API_KEY;
-const GEMINI_CHAT_MODEL = 'gemini-2.0-flash-lite';
+const GEMINI_CHAT_MODEL = 'gemini-2.5-flash-lite';
 const CUSTOM_PRE_PROMPT = 'You are a helpful study buddy. You can answer questions, summarize topics, and help with learning materials. Keep responses concise and to the point.';
 
 
 let ai;
 if (!API_KEY) {
-  console.error('ERROR: API_KEY environment variable is not set.');
-  console.error('Please ensure you have a .env file with API_KEY=YOUR_GEMINI_API_KEY_HERE in your backend directory, or set it in your environment.');
-  process.exit(1);
+    console.error('ERROR: API_KEY environment variable is not set.');
+    console.error('Please ensure you have a .env file with API_KEY=YOUR_GEMINI_API_KEY_HERE in your backend directory, or set it in your environment.');
+    process.exit(1);
 } else {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-  console.log('Gemini API initialized successfully.');
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+    console.log('Gemini API initialized successfully.');
 }
 
 const chatBotRouter = Router();
@@ -78,7 +80,7 @@ chatBotRouter.post('/stream', async (req, res) => {
         console.error('Error in /api/chat/stream:', error);
         // If headers haven't been sent, send an error response. Otherwise, just end the stream.
         if (!res.headersSent) {
-             res.status(500).json({ message: 'Failed to stream response from Gemini API.', error: error.message });
+            res.status(500).json({ message: 'Failed to stream response from Gemini API.', error: error.message });
         } else {
             res.end();
         }
@@ -118,6 +120,62 @@ chatBotRouter.post('/document-chat', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint for generating schedule with context.
+ */
+chatBotRouter.get('/generate-schedule', async (req, res) => {
+    if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
+    const context = (await getContext()).join('\n\n');
+    const contents = [];
+    if (context) {
+        // Add context as a separate part or combined with the prompt
+        contents.push({
+            text: generateSchedulePrompt(context)
+        });
+    }
 
+    try {
+        const response = await ai.models.generateContent({
+            model: GEMINI_CHAT_MODEL, // Using chat model for document AI tasks
+            contents: contents,
+            // System instruction for document AI can be embedded in prompt or config if specific
+            // For general Q&A/summarization, the chat model works well.
+        });
+        res.json({ text: response.text.replace("```json", "").replace("```", "") });
+    } catch (error) {
+        console.error('Error in /api/schedule/generate:', error);
+        res.status(500).json({ message: 'Failed to generate schedule from Gemini API.', error: error.message });
+    }
+});
+
+
+/**
+ * Endpoint for optimizing schedule with context.
+ */
+chatBotRouter.post('/optimize-schedule', async (req, res) => {
+    if (!ai) return res.status(500).json({ message: 'Gemini API is not initialized. Check API_KEY.' });
+    const context = (await getContext()).join('\n\n');
+    const { prompt, schedule } = req.body;
+    const contents = []
+    if (context) {
+        // Add context as a separate part or combined with the prompt
+        contents.push({
+            text: optimizeSchedulePrompt(context, schedule, prompt)
+        });
+    }
+
+    try {
+        const response = await ai.models.generateContent({
+            model: GEMINI_CHAT_MODEL, // Using chat model for document AI tasks
+            contents: contents,
+            // System instruction for document AI can be embedded in prompt or config if specific
+            // For general Q&A/summarization, the chat model works well.
+        });
+        res.json({ text: response.text.replace("```json", "").replace("```", "") });
+    } catch (error) {
+        console.error('Error in /api/schedule/optimize:', error);
+        res.status(500).json({ message: 'Failed to optimize schedule from Gemini API.', error: error.message });
+    }
+});
 
 export default chatBotRouter;
