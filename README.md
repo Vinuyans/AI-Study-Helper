@@ -1,11 +1,11 @@
 # AI-Study-Helper
 
 ## Contributors
-Marian Hristov - 40284462\
-Vinuyan Sivakolunthu - 40280609\
-Nolan Ganz - 40281655\
-Rym Dallali - 40276844\
-Sasha Klein-Charland - 40281076
+Marian Hristov\
+Vinuyan Sivakolunthu\
+Nolan Ganz\
+Rym Dallali\
+Sasha Klein-Charland
 
 
 ## Setup Instructions
